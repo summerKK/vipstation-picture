@@ -1,4 +1,5 @@
 
+#结尾记得加上"/"
 IMG_SAVE_DIR = "D:/var/vip/"
 
 [VPS1]

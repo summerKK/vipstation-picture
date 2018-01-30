@@ -75,10 +75,11 @@ func (database *Database) ticker() {
 
 func (database *Database) ReceiveMediaGallery() {
 	go func() {
-		for {
-			imgs := <-database.UpdateChan
+
+		for imgs := range database.UpdateChan {
 			database.updateMediaGallery(imgs["img"], imgs["sku"])
 		}
+		
 	}()
 }
 
@@ -95,5 +96,5 @@ func (database *Database) updateMediaGallery(imgs string, sku string) {
 	image := thumbnail
 	updatedAt := time.Now().Format("2006-01-02 15:04:05")
 	stmt.Query(imgs, thumbnail, image, updatedAt, sku)
-	log.Printf("sku:%s 更新完成!",sku)
+	log.Printf("sku:%s 更新完成!", sku)
 }

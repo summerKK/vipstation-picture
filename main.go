@@ -20,6 +20,9 @@ import (
 
 var (
 	saveDir string = config.Config.SaveDir
+	//下载图片最大的goruntine
+	maxDownloadGoruntine int = 4
+	downloadCountChan    chan struct{}
 )
 
 func main() {
@@ -27,12 +30,19 @@ func main() {
 	connection.GetProducts()
 	connection.ReceiveMediaGallery()
 	sign := make(chan struct{})
+	downloadCountChan = make(chan struct{}, maxDownloadGoruntine)
 
 	go func() {
 		for {
 			if source := connection.RowCache.Get(); source != nil {
-				mediaGallery := handlePicture(source)
-				connection.UpdateChan <- map[string]string{"img": mediaGallery, "sku": source["sku"]}
+				//每个goruntine增加一个计数器,大于这个缓冲值,直接block
+				downloadCountChan <- struct{}{}
+				go func() {
+					mediaGallery := handlePicture(source)
+					connection.UpdateChan <- map[string]string{"img": mediaGallery, "sku": source["sku"]}
+					//释放goruntine,让后面的goruntine进来
+					<-downloadCountChan
+				}()
 			} else {
 				break
 			}
@@ -118,7 +128,7 @@ func downloadImg(url string, path string, order int, retry int) string {
 		if err != nil || resp.StatusCode != 200 {
 			time.Sleep(time.Second)
 			if retry > 0 {
-				fmt.Printf("下载图片失败!重试中(%d)...", retry)
+				fmt.Printf("下载图片失败!重试中(%d)...\n", retry)
 				return downloadImg(url, path, order, retry-1)
 			} else {
 				fmt.Println("下载图片失败!重试3次")
