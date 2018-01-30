@@ -67,9 +67,11 @@ func handlePicture(source map[string]string) string {
 		wg.Add(1)
 		go func(img string, index int) {
 			s := downloadImg(img, imgDir, index, 3)
-			mu.Lock()
-			imgPaths = append(imgPaths, s)
-			mu.Unlock()
+			if s != "" {
+				mu.Lock()
+				imgPaths = append(imgPaths, s)
+				mu.Unlock()
+			}
 			wg.Done()
 		}(img, index)
 	}
