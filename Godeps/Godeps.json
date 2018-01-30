@@ -1,0 +1,17 @@
+{
+	"ImportPath": "vipstation-picture",
+	"GoVersion": "go1.9",
+	"GodepVersion": "v79",
+	"Deps": [
+		{
+			"ImportPath": "github.com/burntsushi/toml",
+			"Comment": "v0.3.0-7-ga368813",
+			"Rev": "a368813c5e648fee92e5f6c30e3944ff9d5e8895"
+		},
+		{
+			"ImportPath": "github.com/go-sql-driver/mysql",
+			"Comment": "v1.3-26-g8fefef0",
+			"Rev": "8fefef06da7707b5a3cda42195a6b409c9c9ab5c"
+		}
+	]
+}
